@@ -28,6 +28,13 @@ namespace SimulatorLD.WebLayer
     /// </summary>
     public class SimpleAcceptorApp : QuickFix.MessageCracker, QuickFix.IApplication
     {
+        static readonly decimal DEFAULT_MARKET_PRICE = 10;
+
+        int orderID = 0;
+        int execID = 0;
+
+        private string GenOrderID() { return (++orderID).ToString(); }
+        private string GenExecID() { return (++execID).ToString(); }
 
 
         /* private readonly RulesManagementDbContext _context;
@@ -303,6 +310,7 @@ namespace SimulatorLD.WebLayer
         public void OnMessage(QuickFix.FIX44.NewOrderSingle order, SessionID sessionID)
         {
             
+
             DatabaseHandler dbHandler = new DatabaseHandler();
             dbHandler.InsertFixMessage(order);
 
@@ -355,15 +363,15 @@ namespace SimulatorLD.WebLayer
 
             if (order.IsSetField(QuickFix.Fields.Tags.ClOrdID))
             {
-                string clOrdID = order.GetString(QuickFix.Fields.Tags.ClOrdID);
-                Console.WriteLine("ClOrdID: \t" + clOrdID);
+                string clOrdID1 = order.GetString(QuickFix.Fields.Tags.ClOrdID);
+                Console.WriteLine("ClOrdID: \t" + clOrdID1);
             }
 
             // Side
             if (order.IsSetField(QuickFix.Fields.Tags.Side))
             {
-                char side = order.GetChar(QuickFix.Fields.Tags.Side);
-                Console.WriteLine("Side: \t" + side);
+                char side1 = order.GetChar(QuickFix.Fields.Tags.Side);
+                Console.WriteLine("Side: \t" + side1);
             }
 
             // TransactTime
@@ -376,29 +384,29 @@ namespace SimulatorLD.WebLayer
             // OrderQty
             if (order.IsSetField(QuickFix.Fields.Tags.OrderQty))
             {
-                decimal orderQty = order.GetDecimal(QuickFix.Fields.Tags.OrderQty);
-                Console.WriteLine("OrderQty: \t" + orderQty);
+                decimal orderQty1 = order.GetDecimal(QuickFix.Fields.Tags.OrderQty);
+                Console.WriteLine("OrderQty: \t" + orderQty1);
             }
 
             // OrdType
             if (order.IsSetField(QuickFix.Fields.Tags.OrdType))
             {
-                char ordType = order.GetChar(QuickFix.Fields.Tags.OrdType);
-                Console.WriteLine("OrdType: \t" + ordType);
+                char ordType1 = order.GetChar(QuickFix.Fields.Tags.OrdType);
+                Console.WriteLine("OrdType: \t" + ordType1);
             }
 
             // Price
             if (order.IsSetField(QuickFix.Fields.Tags.Price))
             {
-                decimal price = order.GetDecimal(QuickFix.Fields.Tags.Price);
-                Console.WriteLine("Price: \t" + price);
+                decimal price1 = order.GetDecimal(QuickFix.Fields.Tags.Price);
+                Console.WriteLine("Price: \t" + price1);
             }
 
             // Symbol
             if (order.IsSetField(QuickFix.Fields.Tags.Symbol))
             {
-                string symbol = order.GetString(QuickFix.Fields.Tags.Symbol);
-                Console.WriteLine("Symbol: \t" + symbol);
+                string symbol1 = order.GetString(QuickFix.Fields.Tags.Symbol);
+                Console.WriteLine("Symbol: \t" + symbol1);
             }
             //Quantity
             if (order.IsSetField(QuickFix.Fields.Tags.OrderQty))
@@ -406,7 +414,61 @@ namespace SimulatorLD.WebLayer
                 string Quantity = order.GetString(QuickFix.Fields.Tags.OrderQty);
                 Console.WriteLine("Quantity: \t" + Quantity);
             }
+            //SENDING AN EXECUTION REPORT WORK 
+            Symbol symbol = order.Symbol;
+            Side side = order.Side;
+            OrdType ordType = order.OrdType;
+            OrderQty orderQty = order.OrderQty;
+            Price price = new Price(DEFAULT_MARKET_PRICE);
+            ClOrdID clOrdID = order.ClOrdID;
+            if (symbol.ToString() == "IBM")
+            {
+                Console.WriteLine("Block , dont execute orders for Microsoft, BOYCOTT !");
+            }
+            switch (ordType.getValue())
+            {
+                case OrdType.LIMIT:
+                    price = order.Price;
+                    if (price.Obj == 0)
+                        throw new IncorrectTagValue(price.Tag);
+                    break;
+                case OrdType.MARKET: break;
+                default: throw new IncorrectTagValue(ordType.Tag);
+            }
 
+            QuickFix.FIX44.ExecutionReport exReport = new QuickFix.FIX44.ExecutionReport(
+                new OrderID(GenOrderID()),
+                new ExecID(GenExecID()),
+                new ExecType(ExecType.FILL),
+                new OrdStatus(OrdStatus.FILLED),
+                symbol, //shouldn't be here?
+                side,
+                new LeavesQty(0),
+                new CumQty(orderQty.getValue()),
+                new AvgPx(price.getValue()));
+
+            exReport.Set(clOrdID);
+            exReport.Set(symbol);
+            exReport.Set(orderQty);
+            exReport.Set(new LastQty(orderQty.getValue()));
+            exReport.Set(new LastPx(price.getValue()));
+
+            if (order.IsSetAccount())
+                exReport.SetField(order.Account);
+
+            try
+            {
+                Session.SendToTarget(exReport, sessionID);
+            }
+            catch (SessionNotFound ex)
+            {
+                Console.WriteLine("==session not found exception!==");
+                Console.WriteLine(ex.ToString());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
             /*Console.WriteLine("GGGGGGG");*/
 
             //Console.WriteLine("the symbol is " + order.Symbol + " : I will Execute Partially !");
