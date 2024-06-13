@@ -1,0 +1,42 @@
+﻿@page
+@model OrdersModel
+@{
+
+    ViewData["Title"] = "Order List";
+}
+<h2>Order List</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>OrderId</th>
+            <th>BeginString</th>
+            <th>SenderCompID</th>
+            <th>ClientCompID</th>
+            <th>Symbol</th>
+            <th>Price</th>
+            <th>OrderQuantity</th>
+            <th>Side</th>
+            <th>TransactTime</th>
+            <th>RuleId</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model.Orders)
+        {
+            <tr>
+                <td>@order.OrderId</td>
+                <td>@order.BeginString</td>
+                <td>@order.SenderCompId</td>
+                <td>@order.ClientCompId</td>
+                <td>@order.Symbol</td>
+                <td>@order.Price</td>
+                <td>@order.OrderQuantity</td>
+                <td>@order.Side</td>
+                <td>@order.TransactTime</td>
+                <td>@order.RuleId</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
