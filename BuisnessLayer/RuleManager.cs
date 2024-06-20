@@ -1,5 +1,4 @@
 ﻿using SimulatorLD.BuisnessLayer.BOs;
-using SimulatorLD.BuisnessLayer.Models;
 using SimulatorLD.DBLayer.DAOs;
 
 namespace SimulatorLD.BuisnessLayer

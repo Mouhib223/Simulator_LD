@@ -1,5 +1,4 @@
-﻿using SimulatorLD.BuisnessLayer.Models;
-using SimulatorLD.DBLayer.DAOs;
+﻿using SimulatorLD.DBLayer.DAOs;
 using SimulatorLD.DBLayer.Repository;
 
 namespace SimulatorLD.BuisnessLayer.BOs

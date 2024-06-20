@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuickFix.Fields;
-using SimulatorLD.BuisnessLayer.Models;
+
 using SimulatorLD.DBLayer.Repository;
 using SimulatorLD.BuisnessLayer.BOs;
 using SimulatorLD.DBLayer.DAOs;
@@ -54,72 +54,10 @@ namespace SimulatorLD.WebLayer
          {
              _msg = msg;
          }*/
-        private string _host = "127.0.0.1";
-        private int _port = 5019;
+        
         public SimpleAcceptorApp()
         {
         }
-
-
-        //-----------------------------------------------------------------------------
-        //Here we tried to test if the order is matching with the rules is the DB Manually but it doesn't work
-        /*static public bool IsMatching(QuickFix.FIX44.NewOrderSingle order)
-        {
-            string connectionString = "Data Source=.\\SQLEXPRESS;Initial Catalog=RulesDB;Integrated Security=True;Trust ;Server Certificate=True";
-  
-           Console.WriteLine("Entered!");
-            // Replace with your actual connection string
-            string query = "SELECT * FROM [dbo].[Rules];";
-            Console.WriteLine("Entered!");
-
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                Console.WriteLine("connection DONE!");
-                SqlCommand command = new SqlCommand(query, connection);
-                Console.WriteLine("COMMAND DONE!");
-
-
-                try
-                {
-                    connection.Open();
-                    SqlDataReader reader = command.ExecuteReader();
-
-                    while (reader.Read())
-                    {
-                        DBLayer.DAOs.Rule rule = new DBLayer.DAOs.Rule
-                        {
-                            RuleId = reader.GetInt32(0),
-                            RuleType = (RuleTypesEnum)reader.GetInt32(1),
-                            Symbol = reader.GetString(2),
-                            MinPrice = reader.GetFloat(3),
-                            MaxPrice = reader.GetFloat(4),
-                            MinQty = reader.GetFloat(5),
-                            MaxQty = reader.GetFloat(6),
-                            Description = reader.GetString(7),
-
-                        };
-
-                        Console.WriteLine($"Id: {rule.RuleId}, Symbol: {rule.Symbol},Description: {rule.Description}, RuleTypeID: {rule.RuleType}, " +
-                                          $"MinPrice: {rule.MinPrice}, MaxPrice: {rule.MaxPrice}, MinQty: {rule.MinQty}, MaxQty: {rule.MaxQty}");
-                        if (rule.Symbol == order.GetString(QuickFix.Fields.Tags.Symbol))
-                        {
-                            Console.WriteLine("Rule Matched !!");
-                            Console.WriteLine("the symbol is " + rule.Symbol + "===>" + rule.Description);
-                            return true;
-                        }
-                        else { Console.WriteLine("Not matcheed"); }
-                    }
-                    reader.Close();
-
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
-                return false;
-            }
-        }*/
         public class OrderProcessor
         {
             public void InsertOrderIntoDatabase(NewOrderSingle order)
@@ -198,7 +136,16 @@ namespace SimulatorLD.WebLayer
         }}
         static public bool IsMatching(QuickFix.FIX44.NewOrderSingle order)
         {
-            string connectionString = "server=TN1PFE-008\\SQLEXPRESS; database=RulesDB;Integrated Security=True; TrustServerCertificate=True"; // Replace with your actual connection string
+            //string connectionString = "server=TN1PFE-008\\SQLEXPRESS; database=RulesDB;Integrated Security=True; TrustServerCertificate=True"; // Replace with your actual connection string
+            // Build configuration
+            //Working without the direct connectionstring
+            var configuration = new ConfigurationBuilder()
+               .SetBasePath(Directory.GetCurrentDirectory())
+               .AddJsonFile("appsettings.json")
+               .Build();
+
+            // Get connection string from appsettings.json
+            string connectionString = configuration.GetConnectionString("DefaultConnection");
             string query = "SELECT * FROM Rules;";
 
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -421,10 +368,10 @@ namespace SimulatorLD.WebLayer
             OrderQty orderQty = order.OrderQty;
             Price price = new Price(DEFAULT_MARKET_PRICE);
             ClOrdID clOrdID = order.ClOrdID;
-            if (symbol.ToString() == "IBM")
+           /* if (symbol.ToString() == "IBM")
             {
                 Console.WriteLine("Block , dont execute orders for Microsoft, BOYCOTT !");
-            }
+            }*/
             switch (ordType.getValue())
             {
                 case OrdType.LIMIT:
@@ -452,6 +399,7 @@ namespace SimulatorLD.WebLayer
             exReport.Set(orderQty);
             exReport.Set(new LastQty(orderQty.getValue()));
             exReport.Set(new LastPx(price.getValue()));
+            exReport.Text = new Text("This message is from Acceptor");
 
             if (order.IsSetAccount())
                 exReport.SetField(order.Account);
@@ -714,7 +662,7 @@ namespace SimulatorLD.WebLayer
 
 
     
-        private void Test(string tag, string value)
+        /*private void Test(string tag, string value)
         {
 
             var message = new FixMessage();
@@ -743,7 +691,7 @@ namespace SimulatorLD.WebLayer
             // message.A;
 
 
-        }
+        }*/
 
 
       

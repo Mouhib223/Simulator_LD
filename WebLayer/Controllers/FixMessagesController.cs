@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SimulatorLD.BuisnessLayer.BOs;
-using SimulatorLD.BuisnessLayer.Models;
 using SimulatorLD.DBLayer.DAOs;
 using SimulatorLD.DBLayer.Repository;
 
