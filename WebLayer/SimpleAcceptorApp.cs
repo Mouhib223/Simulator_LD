@@ -264,103 +264,138 @@ namespace SimulatorLD.WebLayer
             if (IsMatching(order)) { Console.WriteLine("This Order is Matching a Rule !"); }
             else { Console.WriteLine("No Rule Match This Order"); }
             Console.WriteLine("Fix Message Recived : ");
+            void PrintHeader(string title)
+            {
+                Console.WriteLine(new string('=', 60));
+                Console.WriteLine($"{title}".PadLeft(40));
+                Console.WriteLine(new string('=', 60));
+            }
+
+            void PrintField(string fieldName, string fieldValue)
+            {
+                Console.WriteLine($"{fieldName,-25}: {fieldValue}");
+            }
+
+            PrintHeader("Fix Message Received");
+
+            // SenderCompID
             if (order.Header.IsSetField(QuickFix.Fields.Tags.SenderCompID))
             {
                 string senderCompID = order.Header.GetString(QuickFix.Fields.Tags.SenderCompID);
-                Console.WriteLine("SenderCompID: \t" + senderCompID);
+                PrintField("SenderCompID", senderCompID);
             }
 
             // TargetCompID
             if (order.Header.IsSetField(QuickFix.Fields.Tags.TargetCompID))
             {
                 string targetCompID = order.Header.GetString(QuickFix.Fields.Tags.TargetCompID);
-                Console.WriteLine("TargetCompID: \t" + targetCompID);
+                PrintField("TargetCompID", targetCompID);
             }
 
             // MsgType
             if (order.Header.IsSetField(QuickFix.Fields.Tags.MsgType))
             {
                 string msgType = order.Header.GetString(QuickFix.Fields.Tags.MsgType);
-                Console.WriteLine("MsgType: \t" + msgType);
-                //if type is D parse the message and save it in the databse
-                if (msgType == "D") { Console.WriteLine("D is a New Order - Single");
-                    OrderProcessor processor = new OrderProcessor();
-                    processor.InsertOrderIntoDatabase(order);
+                PrintField("MsgType", msgType);
+
+                switch (msgType)
+                {
+                    case "D":
+                        PrintField("Message Type", "New Order - Single");
+                        OrderProcessor processor = new OrderProcessor();
+                        processor.InsertOrderIntoDatabase(order);
+                        break;
+                    case "0":
+                        PrintField("Message Type", "Heartbeat");
+                        break;
+                    case "5":
+                        PrintField("Message Type", "Logout");
+                        break;
+                    case "A":
+                        PrintField("Message Type", "Logon");
+                        break;
+                    case "F":
+                        PrintField("Message Type", "Order Cancel Request");
+                        break;
+                    case "8":
+                        PrintField("Message Type", "Execution Report");
+                        break;
+                    default:
+                        PrintField("Message Type", "Unknown");
+                        break;
                 }
-                if (msgType == "0") { Console.WriteLine("0 is a Heartbeat"); }
-                if (msgType == "5") { Console.WriteLine("5 is a Logout"); }
-                if (msgType == "A") { Console.WriteLine("A is a Logon"); }
-                if (msgType == "F") { Console.WriteLine("D is an Order Cancel Request"); }
-                if (msgType == "8") { Console.WriteLine("D is an Execution Report"); }
             }
 
             // MsgSeqNum
             if (order.Header.IsSetField(QuickFix.Fields.Tags.MsgSeqNum))
             {
                 int msgSeqNum = order.Header.GetInt(QuickFix.Fields.Tags.MsgSeqNum);
-                Console.WriteLine("MsgSeqNum: \t" + msgSeqNum);
+                PrintField("MsgSeqNum", msgSeqNum.ToString());
             }
 
             // SendingTime
             if (order.Header.IsSetField(QuickFix.Fields.Tags.SendingTime))
             {
                 DateTime sendingTime = order.Header.GetDateTime(QuickFix.Fields.Tags.SendingTime);
-                Console.WriteLine("SendingTime: \t" + sendingTime);
+                PrintField("SendingTime", sendingTime.ToString("yyyy-MM-dd HH:mm:ss"));
             }
 
+            // ClOrdID
             if (order.IsSetField(QuickFix.Fields.Tags.ClOrdID))
             {
                 string clOrdID1 = order.GetString(QuickFix.Fields.Tags.ClOrdID);
-                Console.WriteLine("ClOrdID: \t" + clOrdID1);
+                PrintField("ClOrdID", clOrdID1);
             }
 
             // Side
             if (order.IsSetField(QuickFix.Fields.Tags.Side))
             {
                 char side1 = order.GetChar(QuickFix.Fields.Tags.Side);
-                Console.WriteLine("Side: \t" + side1);
+                PrintField("Side", side1.ToString());
             }
 
             // TransactTime
             if (order.IsSetField(QuickFix.Fields.Tags.TransactTime))
             {
                 DateTime transactTime = order.GetDateTime(QuickFix.Fields.Tags.TransactTime);
-                Console.WriteLine("TransactTime: \t" + transactTime);
+                PrintField("TransactTime", transactTime.ToString("yyyy-MM-dd HH:mm:ss"));
             }
 
             // OrderQty
             if (order.IsSetField(QuickFix.Fields.Tags.OrderQty))
             {
                 decimal orderQty1 = order.GetDecimal(QuickFix.Fields.Tags.OrderQty);
-                Console.WriteLine("OrderQty: \t" + orderQty1);
+                PrintField("OrderQty", orderQty1.ToString());
             }
 
             // OrdType
             if (order.IsSetField(QuickFix.Fields.Tags.OrdType))
             {
                 char ordType1 = order.GetChar(QuickFix.Fields.Tags.OrdType);
-                Console.WriteLine("OrdType: \t" + ordType1);
+                PrintField("OrdType", ordType1.ToString());
             }
 
             // Price
             if (order.IsSetField(QuickFix.Fields.Tags.Price))
             {
                 decimal price1 = order.GetDecimal(QuickFix.Fields.Tags.Price);
-                Console.WriteLine("Price: \t" + price1);
+                PrintField("Price", price1.ToString("0.00"));
             }
 
             // Symbol
             if (order.IsSetField(QuickFix.Fields.Tags.Symbol))
             {
                 string symbol1 = order.GetString(QuickFix.Fields.Tags.Symbol);
-                Console.WriteLine("Symbol: \t" + symbol1);
+                PrintField("Symbol", symbol1);
             }
-            //Quantity
+
+            // Quantity
             if (order.IsSetField(QuickFix.Fields.Tags.OrderQty))
             {
-                string Quantity = order.GetString(QuickFix.Fields.Tags.OrderQty);
-                Console.WriteLine("Quantity: \t" + Quantity);
+                string quantity = order.GetString(QuickFix.Fields.Tags.OrderQty);
+                PrintField("Quantity", quantity);
             }
+
             //SENDING AN EXECUTION REPORT WORK 
             Symbol symbol = order.Symbol;
             Side side = order.Side;
