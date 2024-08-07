@@ -15,7 +15,7 @@ namespace SimulatorLD.DBLayer.Repository
 
         /*  public string getSymbol()
           { return(getSymbol()); }*/
-        public Rule GetRuleBySymbol(string symbol)
+        /*public Rule GetRuleBySymbol(string symbol)
         {
             var db = new RulesManagementDbContext();
             Rule rule = new Rule();
@@ -24,7 +24,7 @@ namespace SimulatorLD.DBLayer.Repository
                 throw new Exception("NotFound");
             return rule;
 
-        }
+        }*/
 
         public Rule GetRuleById(int Id)
         {
@@ -36,7 +36,43 @@ namespace SimulatorLD.DBLayer.Repository
             return rule;
 
         }
+        public Rule GetRuleBySymbol(string symbol)
+        {
+            var db = new RulesManagementDbContext();
+            Rule rule = db.Rules.FirstOrDefault(x => x.Symbol == symbol);
+            if (rule == null)
+                throw new Exception("NotFound");
+            return rule;
+        }
+        public void UpdateRule(Rule rule)
+        {
+            var db = new RulesManagementDbContext();
+            var existingRule = db.Rules.FirstOrDefault(x => x.RuleId == rule.RuleId);
+            if (existingRule == null)
+                throw new Exception("NotFound");
 
+            // Update the existing rule properties
+            existingRule.RuleType = rule.RuleType;
+            existingRule.Symbol = rule.Symbol;
+            existingRule.MinPrice = rule.MinPrice;
+            existingRule.MaxPrice = rule.MaxPrice;
+            existingRule.MinQty = rule.MinQty;
+            existingRule.MaxQty = rule.MaxQty;
+            existingRule.Description = rule.Description;
+
+            db.SaveChanges();
+        }
+
+        public void DeleteRule(int ruleId)
+        {
+            var db = new RulesManagementDbContext();
+            var rule = db.Rules.FirstOrDefault(x => x.RuleId == ruleId);
+            if (rule == null)
+                throw new Exception("NotFound");
+
+            db.Rules.Remove(rule);
+            db.SaveChanges();
+        }
         public void AddRule(Rule rule)
         {
             var db = new RulesManagementDbContext();
@@ -47,9 +83,9 @@ namespace SimulatorLD.DBLayer.Repository
          
        
 
-        public void UpdateRule(Rule rule) 
+        /*public void UpdateRule(Rule rule) 
         {
-            /*var db = new RulesManagementDbContext();
+            *//*var db = new RulesManagementDbContext();
             Rule existingRule = db.Rules.FindAsync<R>();
             if (existingRule != null)
             {
@@ -61,7 +97,7 @@ namespace SimulatorLD.DBLayer.Repository
                 existingRule.MaxQty = rule.MaxQty;
                 existingRule.Description = rule.Description;
                 await _context.SaveChangesAsync();
-            }*/
+            }*//*
 
         }
         public void DeleteRule(Rule rule)
@@ -70,7 +106,7 @@ namespace SimulatorLD.DBLayer.Repository
             db.Rules.Remove(rule);
             db.SaveChanges();
 
-        }
+        }*/
 
     }
 }

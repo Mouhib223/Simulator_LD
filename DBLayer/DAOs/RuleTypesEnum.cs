@@ -6,5 +6,7 @@
         ExecuteAllRule = 2,
         ExecutePartially = 3,
         ExecuteIncrementally = 4,
+        CancelOrder=5,
+        CancelOrderReplace= 6,
     }
 }

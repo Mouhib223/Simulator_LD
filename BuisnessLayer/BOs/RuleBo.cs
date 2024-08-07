@@ -13,22 +13,42 @@ namespace SimulatorLD.BuisnessLayer.BOs
         private RuleRepo rulerepo;
         private RulesManagementDbContext _context;
 
-        
+
+       
+
         public RuleBo()
         {
-            rulerepo = new DBLayer.Repository.RuleRepo();
+            rulerepo = new RuleRepo();
         }
 
-        public List<DBLayer.DAOs.Rule> GetAllRules()
+        public List<Rule> GetAllRules()
         {
-
-            return  rulerepo.GetAllRules();
+            return rulerepo.GetAllRules();
         }
 
-        public void AddRule(DBLayer.DAOs.Rule rule)
+        public void AddRule(Rule rule)
         {
             rulerepo.AddRule(rule);
-          
+        }
+
+        public Rule GetRuleById(int id)
+        {
+            return rulerepo.GetRuleById(id);
+        }
+
+        public Rule GetRuleBySymbol(string symbol)
+        {
+            return rulerepo.GetRuleBySymbol(symbol);
+        }
+
+        public void UpdateRule(Rule rule)
+        {
+            rulerepo.UpdateRule(rule);
+        }
+
+        public void DeleteRule(int ruleId)
+        {
+            rulerepo.DeleteRule(ruleId);
         }
 
 
