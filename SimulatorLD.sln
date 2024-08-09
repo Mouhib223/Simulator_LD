@@ -5,12 +5,6 @@ VisualStudioVersion = 17.9.34607.119
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimulatorLD", "SimulatorLD.csproj", "{182516C1-FEE2-42BB-96DD-474124CA29B2}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3A69EC57-4E73-46E8-AEB7-605F44D69ECA}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
-		TextFile1.txt = TextFile1.txt
-	EndProjectSection
-EndProject
 Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "Test", "..\..\Downloads\SimulatorLD-develop\Learn_C#\Test\bin\Debug\net8.0\Test.exe", "{0444916C-5614-4DB4-81DF-CD8E43C464A3}"
 	ProjectSection(DebuggerProjectSystem) = preProject
 		PortSupplier = 00000000-0000-0000-0000-000000000000

@@ -69,7 +69,7 @@ namespace SimulatorLD.WebLayer
             
         }*/
         
-        public void TreatOrder(QuickFix.FIX44.NewOrderSingle order)
+        /*public void TreatOrder(QuickFix.FIX44.NewOrderSingle order)
         {
 
             //Console.WriteLine("Entered!");
@@ -81,12 +81,12 @@ namespace SimulatorLD.WebLayer
             {
 
                 Console.WriteLine("Iam in process order");
-                /*if (rule.IsMatching(order))
+                *//*if (rule.IsMatching(order))
                 {
                     rule.ProcessOrder(order);
-                }*/
+                }*//*
             }
-        }
+        }*/
 
 
         public void OnMessage(QuickFix.FIX44.NewOrderSingle order, SessionID sessionID)
@@ -289,7 +289,7 @@ namespace SimulatorLD.WebLayer
                 Console.WriteLine(ex.ToString());
             }
             //??
-            TreatOrder(order);
+            //TreatOrder(order);
             
         }
         //OrderCancelRequest Report
